@@ -15,6 +15,7 @@ import ExpenseForm from './components/ExpenseForm'
 import ExpenseList from './components/ExpenseList'
 import Summary from './components/Summary'
 import ExpenseChart from './components/ExpenseChart'
+import CategoryPieChart from './components/CategoryPieChart'
 
 function App() {
   const [spese, setSpese] = useState<Spesa[]>([])
@@ -70,6 +71,9 @@ function App() {
         </section>
         <section className="dashboard-item dashboard-chart">
           <ExpenseChart spese={spese} />
+        </section>
+        <section className="dashboard-item dashboard-pie">
+          <CategoryPieChart spese={spese} />
         </section>
         <section className="dashboard-item dashboard-list">
           <ExpenseList spese={spese} onDelete={handleDeleteSpesa} />
