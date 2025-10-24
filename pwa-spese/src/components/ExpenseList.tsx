@@ -42,6 +42,9 @@ export default function ExpenseList({ spese, onDelete }: Props) {
                     {s.categoria && (
                       <span className="expense-category">{s.categoria}</span>
                     )}
+                    {s.metodoPagamento && (
+                      <span className="expense-method">{s.metodoPagamento}</span>
+                    )}
                   </div>
                   <p className="expense-description">{s.descrizione}</p>
                 </div>

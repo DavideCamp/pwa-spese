@@ -43,6 +43,21 @@ export default function Summary({ spese }: Props) {
     }
   })
 
+  const spesaPerMetodo = ultimeSpese.reduce<Map<string, number>>((acc, s) => {
+    const key = s.metodoPagamento?.trim() || 'Altro'
+    acc.set(key, (acc.get(key) ?? 0) + s.importo)
+    return acc
+  }, new Map())
+
+  let metodoTop: string | null = null
+  let metodoTopImporto = 0
+  spesaPerMetodo.forEach((val, key) => {
+    if (val > metodoTopImporto) {
+      metodoTopImporto = val
+      metodoTop = key
+    }
+  })
+
   return (
     <div className="card summary-card">
       <header className="card-header">
@@ -66,6 +81,12 @@ export default function Summary({ spese }: Props) {
           <span className="summary-label">Categoria principale (30g)</span>
           <strong className="summary-value">
             {categoriaTop ? `${categoriaTop} · ${formatCurrency(importoTop)}` : '—'}
+          </strong>
+        </div>
+        <div className="summary-item">
+          <span className="summary-label">Metodo preferito (30g)</span>
+          <strong className="summary-value">
+            {metodoTop ? `${metodoTop} · ${formatCurrency(metodoTopImporto)}` : '—'}
           </strong>
         </div>
         <div className="summary-item summary-total">

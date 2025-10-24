@@ -1,16 +1,18 @@
 import { useState } from 'react'
-import type { Spesa, Categoria } from '../types'
+import type { Spesa, Categoria, MetodoPagamento } from '../types'
 import dayjs from 'dayjs'
 
 interface Props {
   onAdd: (s: Spesa) => void
   categorie: Categoria[]
+  metodiPagamento: MetodoPagamento[]
 }
 
-export default function ExpenseForm({ onAdd, categorie }: Props) {
+export default function ExpenseForm({ onAdd, categorie, metodiPagamento }: Props) {
   const [descrizione, setDescrizione] = useState('')
   const [importo, setImporto] = useState('')
   const [categoria, setCategoria] = useState('')
+  const [metodoPagamento, setMetodoPagamento] = useState('')
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -19,10 +21,13 @@ export default function ExpenseForm({ onAdd, categorie }: Props) {
       descrizione,
       importo: parseFloat(importo),
       categoria,
+      metodoPagamento,
       data: dayjs().format('YYYY-MM-DD'),
     })
     setDescrizione('')
     setImporto('')
+    setCategoria('')
+    setMetodoPagamento('')
   }
 
   return (
@@ -61,6 +66,20 @@ export default function ExpenseForm({ onAdd, categorie }: Props) {
             {categorie.map((c) => (
               <option key={c.id} value={c.nome}>
                 {c.nome}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="field">
+          <span className="field-label">Metodo di pagamento</span>
+          <select
+            value={metodoPagamento}
+            onChange={(e) => setMetodoPagamento(e.target.value)}
+          >
+            <option value="">Seleziona metodo</option>
+            {metodiPagamento.map((m) => (
+              <option key={m.id} value={m.nome}>
+                {m.nome}
               </option>
             ))}
           </select>

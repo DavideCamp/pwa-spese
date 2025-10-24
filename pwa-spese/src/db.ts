@@ -1,14 +1,17 @@
 import { openDB } from 'idb'
-import type { Spesa, Categoria } from './types'
+import type { Spesa, Categoria, MetodoPagamento } from './types'
 
 export async function getDB() {
-  return openDB('speseDB', 1, {
-    upgrade(db) {
+  return openDB('speseDB', 2, {
+    upgrade(db, oldVersion) {
       if (!db.objectStoreNames.contains('spese')) {
         db.createObjectStore('spese', { keyPath: 'id', autoIncrement: true })
       }
       if (!db.objectStoreNames.contains('categorie')) {
         db.createObjectStore('categorie', { keyPath: 'id', autoIncrement: true })
+      }
+      if (oldVersion < 2 && !db.objectStoreNames.contains('metodiPagamento')) {
+        db.createObjectStore('metodiPagamento', { keyPath: 'id', autoIncrement: true })
       }
     },
   })
@@ -44,4 +47,20 @@ export async function addCategoria(cat: Categoria) {
 export async function deleteCategoria(id: number) {
   const db = await getDB()
   await db.delete('categorie', id)
+}
+
+// --- METODI PAGAMENTO ---
+export async function getMetodiPagamento(): Promise<MetodoPagamento[]> {
+  const db = await getDB()
+  return db.getAll('metodiPagamento')
+}
+
+export async function addMetodoPagamento(metodo: MetodoPagamento) {
+  const db = await getDB()
+  await db.add('metodiPagamento', metodo)
+}
+
+export async function deleteMetodoPagamento(id: number) {
+  const db = await getDB()
+  await db.delete('metodiPagamento', id)
 }

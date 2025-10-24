@@ -6,8 +6,11 @@ import {
   getCategorie,
   addCategoria,
   deleteCategoria,
+  getMetodiPagamento,
+  addMetodoPagamento,
+  deleteMetodoPagamento,
 } from './db'
-import type { Spesa, Categoria } from './types'
+import type { Spesa, Categoria, MetodoPagamento } from './types'
 
 import './style.css'
 import CategoryManager from './components/CategoryManager'
@@ -16,10 +19,12 @@ import ExpenseList from './components/ExpenseList'
 import Summary from './components/Summary'
 import ExpenseChart from './components/ExpenseChart'
 import CategoryPieChart from './components/CategoryPieChart'
+import PaymentMethodManager from './components/PaymentMethodManager'
 
 function App() {
   const [spese, setSpese] = useState<Spesa[]>([])
   const [categorie, setCategorie] = useState<Categoria[]>([])
+  const [metodiPagamento, setMetodiPagamento] = useState<MetodoPagamento[]>([])
 
   useEffect(() => {
     refreshData()
@@ -28,6 +33,7 @@ function App() {
   async function refreshData() {
     setSpese(await getSpese())
     setCategorie(await getCategorie())
+    setMetodiPagamento(await getMetodiPagamento())
   }
 
   async function handleAddSpesa(s: Spesa) {
@@ -50,6 +56,16 @@ function App() {
     refreshData()
   }
 
+  async function handleAddMetodo(nome: string) {
+    await addMetodoPagamento({ nome })
+    refreshData()
+  }
+
+  async function handleDeleteMetodo(id: number) {
+    await deleteMetodoPagamento(id)
+    refreshData()
+  }
+
   return (
     <div className="container">
       <header className="app-header">
@@ -64,7 +80,11 @@ function App() {
 
       <main className="dashboard">
         <section className="dashboard-item dashboard-form">
-          <ExpenseForm onAdd={handleAddSpesa} categorie={categorie} />
+          <ExpenseForm
+            onAdd={handleAddSpesa}
+            categorie={categorie}
+            metodiPagamento={metodiPagamento}
+          />
         </section>
         <section className="dashboard-item dashboard-summary">
           <Summary spese={spese} />
@@ -83,6 +103,13 @@ function App() {
             categorie={categorie}
             onAdd={handleAddCategoria}
             onDelete={handleDeleteCategoria}
+          />
+        </section>
+        <section className="dashboard-item dashboard-methods">
+          <PaymentMethodManager
+            metodi={metodiPagamento}
+            onAdd={handleAddMetodo}
+            onDelete={handleDeleteMetodo}
           />
         </section>
       </main>
