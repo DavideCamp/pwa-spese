@@ -15,9 +15,9 @@
 
 .period-card {
   gap: 1.6rem;
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.82), rgba(246, 248, 252, 0.58));
-  border: 1px solid rgba(207, 214, 226, 0.7);
-  box-shadow: 0 38px 72px -46px rgba(18, 24, 40, 0.32);
+  background: var(--glass-base);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-elevated);
 }
 
 .period-card-header {
@@ -38,9 +38,9 @@
   gap: 0.4rem;
   padding: 0.4rem;
   border-radius: 999px;
-  border: 1px solid rgba(207, 214, 226, 0.75);
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.74), rgba(243, 246, 250, 0.4));
-  box-shadow: 0 18px 32px -26px rgba(18, 24, 40, 0.28);
+  border: 1px solid var(--border);
+  background: var(--glass-muted);
+  box-shadow: var(--shadow-soft);
   backdrop-filter: blur(18px);
 }
 
@@ -61,9 +61,9 @@
 }
 
 .period-toggle-button.active {
-  background: linear-gradient(150deg, rgba(76, 110, 245, 0.18), rgba(76, 110, 245, 0.08));
+  background: var(--glass-active);
   color: var(--text-primary);
-  box-shadow: 0 20px 36px -26px rgba(76, 110, 245, 0.25);
+  box-shadow: var(--shadow-soft);
 }
 
 .period-summary {
@@ -72,15 +72,15 @@
 }
 
 .period-summary-item {
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.74), rgba(244, 247, 251, 0.42));
+  background: var(--glass-muted);
   border-radius: var(--radius-md);
-  border: 1px solid rgba(207, 214, 226, 0.7);
+  border: 1px solid var(--border);
   padding: 1rem 1.2rem;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
   backdrop-filter: blur(18px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .period-trend {
@@ -91,7 +91,7 @@
 
 .period-trend h3 {
   font-size: 1rem;
-  color: rgba(61, 69, 92, 0.78);
+  color: var(--text-secondary);
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
@@ -109,7 +109,7 @@
   padding: 0.5rem 0.75rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.82), rgba(246, 248, 252, 0.5));
+  background: var(--glass-soft);
   color: var(--text-primary);
   transition: border-color var(--transition), box-shadow var(--transition);
   backdrop-filter: blur(16px);

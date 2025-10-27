@@ -142,7 +142,6 @@ function App() {
           <span className="nav-icon" aria-hidden="true">
             📊
           </span>
-          <span className="nav-label">Dashboard</span>
         </button>
         <button
           type="button"
@@ -162,7 +161,6 @@ function App() {
           <span className="nav-icon" aria-hidden="true">
             🛠️
           </span>
-          <span className="nav-label">Gestione</span>
         </button>
       </nav>
     </div>

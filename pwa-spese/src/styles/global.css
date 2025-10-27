@@ -23,11 +23,21 @@
   --danger: #e15252;
   --danger-soft: rgba(225, 82, 82, 0.18);
   --shadow: 0 32px 60px -38px rgba(18, 24, 40, 0.35);
+  --shadow-soft: 0 18px 36px -26px rgba(18, 24, 40, 0.28);
+  --shadow-elevated: 0 24px 48px -30px rgba(18, 24, 40, 0.4);
   --radius-lg: 24px;
   --radius-md: 16px;
   --radius-sm: 12px;
   --transition: 0.25s ease;
   --glass-blur: 22px;
+  --glass-base: linear-gradient(150deg, rgba(255, 255, 255, 0.84), rgba(248, 250, 252, 0.6));
+  --glass-base-hover: linear-gradient(160deg, rgba(255, 255, 255, 0.9), rgba(246, 248, 252, 0.65));
+  --glass-soft: linear-gradient(140deg, rgba(255, 255, 255, 0.74), rgba(246, 248, 252, 0.52));
+  --glass-muted: linear-gradient(150deg, rgba(255, 255, 255, 0.74), rgba(244, 247, 251, 0.42));
+  --glass-elevated: linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(244, 247, 251, 0.72));
+  --glass-active: linear-gradient(155deg, rgba(76, 110, 245, 0.22), rgba(76, 110, 245, 0.08));
+  --glass-chip: linear-gradient(145deg, rgba(255, 255, 255, 0.36), rgba(244, 247, 251, 0.2));
+  --glass-track: linear-gradient(140deg, rgba(255, 255, 255, 0.62), rgba(239, 245, 255, 0.3));
 }
 
 @media (prefers-color-scheme: dark) {
@@ -45,7 +55,17 @@
     --accent-soft: rgba(134, 160, 255, 0.22);
     --danger: #ffa0a0;
     --danger-soft: rgba(255, 160, 160, 0.22);
-    --shadow: 0 36px 72px -44px rgba(3, 7, 18, 0.8);
+    --shadow: 0 36px 72px -44px rgba(3, 7, 18, 0.78);
+    --shadow-soft: 0 20px 40px -28px rgba(3, 8, 18, 0.56);
+    --shadow-elevated: 0 30px 56px -32px rgba(3, 8, 18, 0.68);
+    --glass-base: linear-gradient(150deg, rgba(42, 54, 82, 0.75), rgba(22, 30, 50, 0.6));
+    --glass-base-hover: linear-gradient(160deg, rgba(52, 66, 96, 0.82), rgba(26, 34, 54, 0.66));
+    --glass-soft: linear-gradient(145deg, rgba(40, 52, 80, 0.65), rgba(22, 30, 50, 0.5));
+    --glass-muted: linear-gradient(145deg, rgba(36, 46, 72, 0.62), rgba(20, 28, 46, 0.46));
+    --glass-elevated: linear-gradient(145deg, rgba(44, 58, 90, 0.86), rgba(20, 28, 46, 0.78));
+    --glass-active: linear-gradient(150deg, rgba(134, 160, 255, 0.24), rgba(134, 160, 255, 0.08));
+    --glass-chip: linear-gradient(145deg, rgba(52, 66, 98, 0.52), rgba(24, 32, 54, 0.36));
+    --glass-track: linear-gradient(145deg, rgba(46, 60, 90, 0.58), rgba(24, 32, 54, 0.42));
   }
 }
 
@@ -89,7 +109,7 @@ a {
 
 /* === Card === */
 .card {
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.84), rgba(248, 250, 252, 0.6));
+  background: var(--glass-base);
   border-radius: var(--radius-lg);
   padding: 1.6rem;
   box-shadow: var(--shadow);
@@ -105,9 +125,9 @@ a {
 
 .card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 32px 60px -36px rgba(18, 24, 40, 0.45);
+  box-shadow: var(--shadow-elevated);
   border-color: var(--border-strong);
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.9), rgba(246, 248, 252, 0.65));
+  background: var(--glass-base-hover);
 }
 
 .card-header {
@@ -166,7 +186,7 @@ input,
 select {
   padding: 0.7rem 0.9rem;
   border: 1px solid var(--border);
-  background: linear-gradient(140deg, rgba(255, 255, 255, 0.74), rgba(246, 248, 252, 0.52));
+  background: var(--glass-soft);
   color: var(--text-primary);
 }
 
@@ -180,7 +200,7 @@ select:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 4px var(--accent-soft);
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.88), rgba(246, 248, 252, 0.62));
+  background: var(--glass-base-hover);
 }
 
 select {
@@ -225,14 +245,14 @@ button:disabled {
 }
 
 .secondary {
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.68), rgba(246, 248, 252, 0.45));
+  background: var(--glass-muted);
   color: var(--text-primary);
   border: 1px solid var(--border);
 }
 
 .secondary:hover {
   border-color: var(--border-strong);
-  box-shadow: 0 18px 28px -24px rgba(18, 24, 40, 0.2);
+  box-shadow: var(--shadow-soft);
 }
 
 .ghost {
@@ -264,7 +284,7 @@ button:disabled {
 .empty-state {
   padding: 1rem;
   border-radius: var(--radius-md);
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.66), rgba(246, 248, 252, 0.42));
+  background: var(--glass-muted);
   color: var(--text-muted);
   text-align: center;
   border: 1px dashed var(--border);
