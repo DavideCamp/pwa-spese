@@ -21,7 +21,7 @@ const formatCurrency = (value: number) =>
   value.toLocaleString('it-IT', { style: 'currency', currency: 'EUR' })
 
 export default function DashboardPage({ spese, onDelete }: Props) {
-  const [period, setPeriod] = useState<Period>('month')
+  const [period, setPeriod] = useState<Period>('week')
   const [weekReference, setWeekReference] = useState(() => dayjs().format('YYYY-MM-DD'))
 
   const weekRange = useMemo(() => {
@@ -251,7 +251,7 @@ export default function DashboardPage({ spese, onDelete }: Props) {
             </div>
           </div>
 
-          
+
         </div>
       </section>
 

@@ -13,16 +13,7 @@ interface Slice {
   percentage: number
 }
 
-const palette = [
-  '#2563eb',
-  '#7c3aed',
-  '#10b981',
-  '#f97316',
-  '#ec4899',
-  '#14b8a6',
-  '#facc15',
-  '#22d3ee',
-]
+const palette = ['#4c6ef5', '#748ffc', '#91a7ff', '#adb5bd', '#cfd4dc', '#dee2ff', '#bcc4d6', '#8b95b6']
 
 const size = 220
 const radius = 90

@@ -7,43 +7,45 @@
 
 :root {
   color-scheme: light dark;
-  --font-base: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --bg: #f5f7fb;
-  --surface: #ffffff;
-  --surface-muted: #f1f5f9;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #64748b;
-  --border: rgba(148, 163, 184, 0.4);
-  --border-strong: rgba(15, 23, 42, 0.16);
-  --accent: #2563eb;
-  --accent-strong: #1d4ed8;
-  --accent-soft: rgba(37, 99, 235, 0.12);
-  --danger: #ef4444;
-  --danger-soft: rgba(239, 68, 68, 0.12);
-  --shadow: 0 16px 32px -20px rgba(15, 23, 42, 0.45);
-  --radius-lg: 20px;
-  --radius-md: 14px;
-  --radius-sm: 10px;
+  --font-base: 'SF Pro Display', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, sans-serif;
+  --bg: #edf1f5;
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-muted: rgba(248, 250, 252, 0.58);
+  --text-primary: #131621;
+  --text-secondary: #3d4557;
+  --text-muted: #6b7385;
+  --border: rgba(207, 214, 226, 0.7);
+  --border-strong: rgba(176, 184, 202, 0.9);
+  --accent: #4c6ef5;
+  --accent-strong: #3d5af1;
+  --accent-soft: rgba(76, 110, 245, 0.16);
+  --danger: #e15252;
+  --danger-soft: rgba(225, 82, 82, 0.18);
+  --shadow: 0 32px 60px -38px rgba(18, 24, 40, 0.35);
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
   --transition: 0.25s ease;
+  --glass-blur: 22px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #050b18;
-    --surface: rgba(15, 23, 42, 0.75);
-    --surface-muted: rgba(30, 41, 59, 0.7);
-    --text-primary: #e2e8f0;
-    --text-secondary: #94a3b8;
-    --text-muted: #7c8fb4;
-    --border: rgba(148, 163, 184, 0.24);
-    --border-strong: rgba(148, 163, 184, 0.36);
-    --accent: #60a5fa;
-    --accent-strong: #3b82f6;
-    --accent-soft: rgba(96, 165, 250, 0.18);
-    --danger: #f87171;
-    --danger-soft: rgba(248, 113, 113, 0.18);
-    --shadow: 0 24px 48px -24px rgba(15, 23, 42, 0.8);
+    --bg: #0d111d;
+    --surface: rgba(22, 27, 40, 0.74);
+    --surface-muted: rgba(22, 27, 40, 0.6);
+    --text-primary: #e4e9f5;
+    --text-secondary: #b0b8cc;
+    --text-muted: #8992a6;
+    --border: rgba(90, 102, 128, 0.38);
+    --border-strong: rgba(126, 139, 166, 0.6);
+    --accent: #86a0ff;
+    --accent-strong: #6b87ff;
+    --accent-soft: rgba(134, 160, 255, 0.22);
+    --danger: #ffa0a0;
+    --danger-soft: rgba(255, 160, 160, 0.22);
+    --shadow: 0 36px 72px -44px rgba(3, 7, 18, 0.8);
   }
 }
 
@@ -51,7 +53,13 @@ html,
 body {
   height: 100%;
   font-family: var(--font-base);
-  background: var(--bg);
+  background:
+    radial-gradient(140% 120% at 0% 0%, rgba(203, 215, 231, 0.4), transparent 58%),
+    radial-gradient(120% 110% at 100% 0%, rgba(210, 223, 238, 0.35), transparent 62%),
+    linear-gradient(140deg, rgba(237, 241, 245, 0.92) 0%, rgba(245, 247, 250, 0.94) 55%,
+      rgba(236, 242, 248, 0.96) 100%),
+    var(--bg);
+  background-repeat: no-repeat;
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   transition: background-color var(--transition), color var(--transition);
@@ -59,8 +67,20 @@ body {
 
 body {
   min-height: 100%;
-  background: radial-gradient(120% 120% at 50% 0%, rgba(37, 99, 235, 0.08), transparent 55%),
-    var(--bg);
+  background-attachment: fixed;
+  background-size: 160% 160%, 140% 140%, cover, auto;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background:
+      radial-gradient(120% 140% at 0% 0%, rgba(34, 45, 70, 0.45), transparent 58%),
+      radial-gradient(120% 140% at 100% 0%, rgba(22, 32, 52, 0.5), transparent 60%),
+      linear-gradient(145deg, rgba(12, 18, 32, 0.95) 0%, rgba(18, 24, 40, 0.94) 45%,
+        rgba(10, 15, 28, 0.98) 100%),
+      var(--bg);
+    background-size: 160% 160%, 140% 140%, cover, auto;
+  }
 }
 
 a {
@@ -69,7 +89,7 @@ a {
 
 /* === Card === */
 .card {
-  background: var(--surface);
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.84), rgba(248, 250, 252, 0.6));
   border-radius: var(--radius-lg);
   padding: 1.6rem;
   box-shadow: var(--shadow);
@@ -78,15 +98,16 @@ a {
   flex-direction: column;
   gap: 1.2rem;
   height: 100%;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(var(--glass-blur));
   transition: transform var(--transition), box-shadow var(--transition),
     border-color var(--transition), background-color var(--transition);
 }
 
 .card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 24px 48px -32px rgba(37, 99, 235, 0.35);
+  transform: translateY(-3px);
+  box-shadow: 0 32px 60px -36px rgba(18, 24, 40, 0.45);
   border-color: var(--border-strong);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.9), rgba(246, 248, 252, 0.65));
 }
 
 .card-header {
@@ -145,7 +166,7 @@ input,
 select {
   padding: 0.7rem 0.9rem;
   border: 1px solid var(--border);
-  background: var(--surface-muted);
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.74), rgba(246, 248, 252, 0.52));
   color: var(--text-primary);
 }
 
@@ -159,7 +180,7 @@ select:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 4px var(--accent-soft);
-  background: var(--surface);
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.88), rgba(246, 248, 252, 0.62));
 }
 
 select {
@@ -196,7 +217,7 @@ button:disabled {
 .primary {
   background: var(--accent);
   color: #fff;
-  box-shadow: 0 16px 24px -18px rgba(37, 99, 235, 0.6);
+  box-shadow: 0 22px 36px -22px rgba(76, 110, 245, 0.45);
 }
 
 .primary:hover {
@@ -204,13 +225,14 @@ button:disabled {
 }
 
 .secondary {
-  background: var(--surface-muted);
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.68), rgba(246, 248, 252, 0.45));
   color: var(--text-primary);
   border: 1px solid var(--border);
 }
 
 .secondary:hover {
   border-color: var(--border-strong);
+  box-shadow: 0 18px 28px -24px rgba(18, 24, 40, 0.2);
 }
 
 .ghost {
@@ -242,7 +264,7 @@ button:disabled {
 .empty-state {
   padding: 1rem;
   border-radius: var(--radius-md);
-  background: var(--surface-muted);
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.66), rgba(246, 248, 252, 0.42));
   color: var(--text-muted);
   text-align: center;
   border: 1px dashed var(--border);

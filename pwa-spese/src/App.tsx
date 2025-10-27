@@ -71,8 +71,8 @@ function App() {
   const pageCopy = useMemo<Record<View, { title: string; subtitle: string }>>(
     () => ({
       dashboard: {
-        title: 'Cruscotto spese',
-        subtitle: 'Analizza gli andamenti e filtra rapidamente per settimana o mese.',
+        title: 'Expense app',
+        subtitle: '',
       },
       add: {
         title: 'Registra una spesa',

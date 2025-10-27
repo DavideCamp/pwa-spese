@@ -73,8 +73,8 @@ export default function TrendChart({ data, maxValue, yFormatter, ariaLabel }: Pr
       >
         <defs>
           <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="rgba(37, 99, 235, 0.35)" />
-            <stop offset="100%" stopColor="rgba(37, 99, 235, 0.05)" />
+            <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.42" />
+            <stop offset="100%" stopColor="var(--accent)" stopOpacity="0.05" />
           </linearGradient>
         </defs>
 

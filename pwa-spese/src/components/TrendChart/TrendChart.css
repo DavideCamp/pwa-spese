@@ -9,25 +9,25 @@
 }
 
 .trend-chart-axis {
-  stroke: var(--border-strong);
+  stroke: rgba(69, 80, 114, 0.35);
   stroke-width: 1;
 }
 
 .trend-chart-gridline {
-  stroke: var(--border);
+  stroke: rgba(69, 80, 114, 0.18);
   stroke-width: 1;
   stroke-dasharray: 4 4;
 }
 
 .trend-chart-y-label {
   font-size: 0.7rem;
-  fill: var(--text-muted);
+  fill: rgba(111, 120, 153, 0.9);
   text-anchor: end;
 }
 
 .trend-chart-x-label {
   font-size: 0.75rem;
-  fill: var(--text-muted);
+  fill: rgba(111, 120, 153, 0.9);
   text-anchor: middle;
 }
 
@@ -45,4 +45,5 @@
   fill: #fff;
   stroke: var(--accent);
   stroke-width: 2;
+  filter: drop-shadow(0 6px 14px rgba(76, 110, 245, 0.25));
 }

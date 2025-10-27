@@ -13,7 +13,7 @@ interface ChartPoint {
   value: number
 }
 
-const palette = ['#2563eb', '#7c3aed', '#10b981', '#f97316', '#ec4899', '#14b8a6']
+const palette = ['#4c6ef5', '#748ffc', '#91a7ff', '#adb5bd', '#cfd4dc', '#dee2ff']
 
 export default function ExpenseChart({ spese }: Props) {
   const data = useMemo<ChartPoint[]>(() => {
