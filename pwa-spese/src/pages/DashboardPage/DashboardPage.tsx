@@ -1,9 +1,11 @@
-import { useMemo, useState } from 'react'
+import { type ChangeEvent, useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import type { Spesa } from '../../types'
 import Summary from '../../components/Summary'
 import CategoryPieChart from '../../components/CategoryPieChart'
 import ExpenseList from '../../components/ExpenseList'
+import TrendChart from '../../components/TrendChart'
+import type { TrendChartPoint } from '../../components/TrendChart'
 import './DashboardPage.css'
 
 type Period = 'week' | 'month'
@@ -13,33 +15,48 @@ interface Props {
   onDelete: (id: number) => void
 }
 
-interface TrendPoint {
-  key: string
-  label: string
-  value: number
-}
+type TrendPoint = TrendChartPoint
 
 const formatCurrency = (value: number) =>
   value.toLocaleString('it-IT', { style: 'currency', currency: 'EUR' })
 
 export default function DashboardPage({ spese, onDelete }: Props) {
   const [period, setPeriod] = useState<Period>('month')
+  const [weekReference, setWeekReference] = useState(() => dayjs().format('YYYY-MM-DD'))
+
+  const weekRange = useMemo(() => {
+    const referenceDate = dayjs(weekReference)
+    const baseDate = referenceDate.isValid() ? referenceDate : dayjs()
+    const startOfWeek = baseDate
+      .startOf('day')
+      .subtract((baseDate.day() + 6) % 7, 'day')
+    const endOfWeek = startOfWeek.add(6, 'day').endOf('day')
+    return { start: startOfWeek, end: endOfWeek }
+  }, [weekReference])
 
   const filteredSpese = useMemo(() => {
     if (spese.length === 0) return []
 
+    if (period === 'week') {
+      return spese.filter((spesa) => {
+        const dataSpesa = dayjs(spesa.data)
+        if (!dataSpesa.isValid()) return false
+        return (
+          (dataSpesa.isAfter(weekRange.start) || dataSpesa.isSame(weekRange.start, 'day')) &&
+          (dataSpesa.isBefore(weekRange.end) || dataSpesa.isSame(weekRange.end, 'day'))
+        )
+      })
+    }
+
     const now = dayjs()
-    const limit =
-      period === 'week'
-        ? now.subtract(6, 'day').startOf('day')
-        : now.startOf('month')
+    const startOfMonth = now.startOf('month')
 
     return spese.filter((spesa) => {
       const dataSpesa = dayjs(spesa.data)
       if (!dataSpesa.isValid()) return false
-      return dataSpesa.isAfter(limit) || dataSpesa.isSame(limit, 'day')
+      return dataSpesa.isAfter(startOfMonth) || dataSpesa.isSame(startOfMonth, 'day')
     })
-  }, [spese, period])
+  }, [spese, period, weekRange])
 
   const stats = useMemo(() => {
     if (filteredSpese.length === 0) {
@@ -86,31 +103,39 @@ export default function DashboardPage({ spese, onDelete }: Props) {
   const trend = useMemo<TrendPoint[]>(() => {
     if (filteredSpese.length === 0) return []
 
-    const now = dayjs()
-    const days =
-      period === 'week' ? 7 : Math.max(1, now.date())
-    const start =
-      period === 'week'
-        ? now.subtract(days - 1, 'day').startOf('day')
-        : now.startOf('month')
-
     const totalsByDay = filteredSpese.reduce<Map<string, number>>((acc, spesa) => {
       const key = dayjs(spesa.data).format('YYYY-MM-DD')
       acc.set(key, (acc.get(key) ?? 0) + spesa.importo)
       return acc
     }, new Map())
 
+    if (period === 'week') {
+      const start = weekRange.start.startOf('day')
+      return Array.from({ length: 7 }, (_, index) => {
+        const date = start.add(index, 'day')
+        const key = date.format('YYYY-MM-DD')
+        return {
+          key,
+          label: date.format('dd'),
+          value: totalsByDay.get(key) ?? 0,
+        }
+      })
+    }
+
+    const now = dayjs()
+    const days = Math.max(1, now.date())
+    const start = now.startOf('month')
+
     return Array.from({ length: days }, (_, index) => {
       const date = start.add(index, 'day')
       const key = date.format('YYYY-MM-DD')
-      const label = period === 'week' ? date.format('dd') : date.format('DD')
       return {
         key,
-        label,
+        label: date.format('DD'),
         value: totalsByDay.get(key) ?? 0,
       }
     })
-  }, [filteredSpese, period])
+  }, [filteredSpese, period, weekRange])
 
   const maxTrendValue = useMemo(
     () => trend.reduce((max, point) => Math.max(max, point.value), 0),
@@ -118,10 +143,25 @@ export default function DashboardPage({ spese, onDelete }: Props) {
   )
 
   const periodLabel =
-    period === 'week' ? 'Ultimi 7 giorni' : 'Mese corrente'
+    period === 'week'
+      ? `Settimana ${weekRange.start.format('DD MMM')} – ${weekRange.end.format('DD MMM')}`
+      : 'Mese corrente'
 
   const handleChangePeriod = (value: Period) => {
     setPeriod(value)
+  }
+
+  const handleWeekReferenceChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value
+    if (!value) {
+      setWeekReference(dayjs().format('YYYY-MM-DD'))
+      return
+    }
+
+    const parsed = dayjs(value)
+    if (parsed.isValid()) {
+      setWeekReference(parsed.format('YYYY-MM-DD'))
+    }
   }
 
   return (
@@ -133,29 +173,60 @@ export default function DashboardPage({ spese, onDelete }: Props) {
               <h2>Panoramica</h2>
               <p>Visualizza l&rsquo;andamento delle spese per periodo selezionato.</p>
             </div>
-            <div className="period-toggle" role="tablist" aria-label="Filtro periodo">
-              <button
-                type="button"
-                role="tab"
-                aria-selected={period === 'week'}
-                className={`period-toggle-button ${period === 'week' ? 'active' : ''}`}
-                onClick={() => handleChangePeriod('week')}
-              >
-                Settimana
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={period === 'month'}
-                className={`period-toggle-button ${period === 'month' ? 'active' : ''}`}
-                onClick={() => handleChangePeriod('month')}
-              >
-                Mese
-              </button>
+            <div className="period-controls">
+              <div className="period-toggle" role="tablist" aria-label="Filtro periodo">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={period === 'week'}
+                  className={`period-toggle-button ${period === 'week' ? 'active' : ''}`}
+                  onClick={() => handleChangePeriod('week')}
+                >
+                  Settimana
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={period === 'month'}
+                  className={`period-toggle-button ${period === 'month' ? 'active' : ''}`}
+                  onClick={() => handleChangePeriod('month')}
+                >
+                  Mese
+                </button>
+              </div>
+              {period === 'week' && (
+                <label className="week-picker">
+                  <span className="week-picker-label">Data di riferimento</span>
+                  <input
+                    type="date"
+                    value={weekReference}
+                    onChange={handleWeekReferenceChange}
+                    max={dayjs().format('YYYY-MM-DD')}
+                  />
+                </label>
+              )}
             </div>
           </header>
 
-          <div className="period-summary">
+        
+
+          <div className="period-trend">
+            <h3>Trend giornaliero</h3>
+            {trend.length === 0 || maxTrendValue === 0 ? (
+              <p className="chart-empty">
+                Registra qualche spesa per vedere il trend dell&apos;intervallo scelto.
+              </p>
+            ) : (
+              <TrendChart
+                data={trend}
+                maxValue={maxTrendValue}
+                yFormatter={formatCurrency}
+                ariaLabel={`Trend spese per ${periodLabel.toLowerCase()}`}
+              />
+            )}
+          </div>
+
+            <div className="period-summary">
             <div className="period-summary-item">
               <span className="summary-label">{periodLabel}</span>
               <strong className="summary-value">{formatCurrency(stats.total)}</strong>
@@ -180,38 +251,7 @@ export default function DashboardPage({ spese, onDelete }: Props) {
             </div>
           </div>
 
-          <div className="period-trend">
-            <h3>Trend giornaliero</h3>
-            {trend.length === 0 || maxTrendValue === 0 ? (
-              <p className="chart-empty">
-                Registra qualche spesa per vedere il trend dell&apos;intervallo scelto.
-              </p>
-            ) : (
-              <div
-                className="trend-chart"
-                role="img"
-                aria-label={`Trend spese per ${periodLabel.toLowerCase()}`}
-              >
-                {trend.map((point) => {
-                  const height =
-                    maxTrendValue === 0
-                      ? 0
-                      : Math.max(12, Math.round((point.value / maxTrendValue) * 100))
-                  return (
-                    <div key={point.key} className="trend-col">
-                      <div
-                        className="trend-bar"
-                        style={{ height: `${height}%` }}
-                        title={`${point.label} · ${formatCurrency(point.value)}`}
-                        aria-hidden="true"
-                      />
-                      <span className="trend-label">{point.label}</span>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-          </div>
+          
         </div>
       </section>
 

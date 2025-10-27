@@ -1,0 +1,48 @@
+.trend-chart {
+  width: 100%;
+}
+
+.trend-chart-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.trend-chart-axis {
+  stroke: var(--border-strong);
+  stroke-width: 1;
+}
+
+.trend-chart-gridline {
+  stroke: var(--border);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+.trend-chart-y-label {
+  font-size: 0.7rem;
+  fill: var(--text-muted);
+  text-anchor: end;
+}
+
+.trend-chart-x-label {
+  font-size: 0.75rem;
+  fill: var(--text-muted);
+  text-anchor: middle;
+}
+
+.trend-chart-area {
+  stroke: none;
+}
+
+.trend-chart-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+}
+
+.trend-chart-point circle {
+  fill: #fff;
+  stroke: var(--accent);
+  stroke-width: 2;
+}
