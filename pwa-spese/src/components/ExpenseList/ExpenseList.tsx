@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import dayjs from 'dayjs'
-import type { Spesa } from '../types'
+import type { Spesa } from '../../types'
+import './ExpenseList.css'
 
 interface Props {
   spese: Spesa[]

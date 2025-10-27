@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import type { Categoria } from '../types'
+import type { Categoria } from '../../types'
+import './CategoryManager.css'
 
 interface Props {
   categorie: Categoria[]

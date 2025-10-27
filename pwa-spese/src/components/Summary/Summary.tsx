@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
-import type { Spesa } from '../types'
+import type { Spesa } from '../../types'
+import './Summary.css'
 
 interface Props {
   spese: Spesa[]

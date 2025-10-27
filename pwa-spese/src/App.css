@@ -1,42 +1,193 @@
-#root {
-  max-width: 1280px;
+/* === App layout === */
+.container {
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-container {
+  flex: 1 1 auto;
+  width: 100%;
+}
+
+.page-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-bottom: 4.5rem;
+}
+
+.page-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.manage-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.app-header {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.app-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.app-header span {
+  color: var(--accent);
+}
+
+.app-header p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+/* === Bottom navigation === */
+.bottom-nav {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem clamp(1rem, 5vw, 2.5rem) calc(0.8rem + env(safe-area-inset-bottom));
+  background: rgba(245, 247, 251, 0.88);
+  border-top: 1px solid var(--border);
+  backdrop-filter: blur(14px);
+  z-index: 50;
+}
+
+@media (prefers-color-scheme: dark) {
+  .bottom-nav {
+    background: rgba(15, 23, 42, 0.78);
   }
-  to {
-    transform: rotate(360deg);
+}
+
+.nav-item {
+  flex: 1 1 0;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  padding: 0.65rem 0.5rem;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  transition: transform var(--transition), border-color var(--transition),
+    background-color var(--transition), color var(--transition), box-shadow var(--transition);
+}
+
+.nav-item:hover {
+  transform: translateY(-1px);
+  border-color: var(--border-strong);
+}
+
+.nav-item.active {
+  color: var(--accent);
+  border-color: rgba(37, 99, 235, 0.3);
+  background: rgba(37, 99, 235, 0.12);
+  box-shadow: 0 12px 24px -16px rgba(37, 99, 235, 0.45);
+}
+
+.nav-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.nav-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.nav-primary {
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  padding: 0;
+  font-size: 2rem;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  box-shadow: 0 18px 38px -18px rgba(37, 99, 235, 0.8);
+  margin-top: -2.2rem;
+}
+
+.nav-primary:hover {
+  transform: translateY(-3px);
+  background: var(--accent-strong);
+}
+
+.nav-primary.active {
+  background: var(--accent-strong);
+}
+
+.nav-primary .nav-label {
+  display: none;
+}
+
+.nav-primary .nav-icon {
+  font-size: 2rem;
+}
+
+@media (max-width: 520px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .bottom-nav {
+    gap: 0.75rem;
+    padding: 0.65rem 1rem calc(0.65rem + env(safe-area-inset-bottom));
+  }
+
+  .nav-item {
+    font-size: 0.75rem;
+  }
+
+  .nav-primary {
+    width: 56px;
+    height: 56px;
+    margin-top: -1.8rem;
+    font-size: 1.8rem;
+  }
+
+  .page-content {
+    padding-bottom: 4rem;
+  }
+
+  .app-header h1 {
+    font-size: 1.7rem;
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+@media (min-width: 768px) {
+  .manage-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }

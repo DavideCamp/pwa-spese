@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
-import type { Spesa } from '../types'
+import type { Spesa } from '../../types'
+import './CategoryPieChart.css'
 
 interface Props {
   spese: Spesa[]

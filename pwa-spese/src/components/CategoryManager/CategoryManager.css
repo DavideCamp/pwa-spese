@@ -1,0 +1,32 @@
+.card-categories {
+  gap: 1.25rem;
+}
+
+.category-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.category-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  transition: border-color var(--transition), transform var(--transition);
+}
+
+.category-item:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+
+.category-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}

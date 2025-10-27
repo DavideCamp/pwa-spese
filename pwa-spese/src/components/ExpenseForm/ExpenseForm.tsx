@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import type { Spesa, Categoria, MetodoPagamento } from '../types'
 import dayjs from 'dayjs'
+import type { Spesa, Categoria, MetodoPagamento } from '../../types'
+import './ExpenseForm.css'
 
 interface Props {
   onAdd: (s: Spesa) => void

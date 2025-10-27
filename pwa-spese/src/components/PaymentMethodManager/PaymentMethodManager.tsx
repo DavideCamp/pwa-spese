@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import type { MetodoPagamento } from '../types'
+import type { MetodoPagamento } from '../../types'
+import './PaymentMethodManager.css'
 
 interface Props {
   metodi: MetodoPagamento[]
