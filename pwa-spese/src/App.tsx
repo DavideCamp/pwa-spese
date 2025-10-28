@@ -1,168 +1,141 @@
-import { useEffect, useMemo, useState } from 'react'
-import {
-  getSpese,
-  addSpesa,
-  deleteSpesa,
-  getCategorie,
-  addCategoria,
-  deleteCategoria,
-  getMetodiPagamento,
-  addMetodoPagamento,
-  deleteMetodoPagamento,
-} from './db'
-import type { Spesa, Categoria, MetodoPagamento } from './types'
-
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import './styles/global.css'
 import './App.css'
-import CategoryManager from './components/CategoryManager'
-import ExpenseForm from './components/ExpenseForm'
-import ExpenseList from './components/ExpenseList'
-import PaymentMethodManager from './components/PaymentMethodManager'
-import DashboardPage from './pages/DashboardPage'
 
-type View = 'dashboard' | 'add' | 'manage'
+import DayNavigator from './components/DayNavigator'
+import SessionForm from './components/SessionForm'
+import SessionList from './components/SessionList'
+import { deleteSession, getSessionsByDate, saveSession } from './db'
+import type { TrainingSession } from './types'
+import { computeDailyStats } from './utils/stats'
+import { fromISODateString, toISODateString } from './utils/dates'
 
 function App() {
-  const [spese, setSpese] = useState<Spesa[]>([])
-  const [categorie, setCategorie] = useState<Categoria[]>([])
-  const [metodiPagamento, setMetodiPagamento] = useState<MetodoPagamento[]>([])
-  const [activeView, setActiveView] = useState<View>('dashboard')
+  const [selectedDateISO, setSelectedDateISO] = useState(() => toISODateString(new Date()))
+  const [sessions, setSessions] = useState<TrainingSession[]>([])
+  const [loading, setLoading] = useState(true)
+  const [editingSession, setEditingSession] = useState<TrainingSession | null>(null)
 
-  useEffect(() => {
-    refreshData()
+  const selectedDate = useMemo(() => fromISODateString(selectedDateISO), [selectedDateISO])
+
+  const refreshSessions = useCallback(async (dateIso: string) => {
+    setLoading(true)
+    try {
+      const records = await getSessionsByDate(dateIso)
+      setSessions(records)
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
-  async function refreshData() {
-    setSpese(await getSpese())
-    setCategorie(await getCategorie())
-    setMetodiPagamento(await getMetodiPagamento())
+  useEffect(() => {
+    let active = true
+    setLoading(true)
+    getSessionsByDate(selectedDateISO)
+      .then((records) => {
+        if (active) {
+          setSessions(records)
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setLoading(false)
+        }
+      })
+    return () => {
+      active = false
+    }
+  }, [selectedDateISO])
+
+  const stats = useMemo(() => computeDailyStats(sessions), [sessions])
+
+  const handleDateChange = (date: Date) => {
+    const iso = toISODateString(date)
+    setSelectedDateISO(iso)
+    setEditingSession(null)
   }
 
-  async function handleAddSpesa(s: Spesa) {
-    await addSpesa(s)
-    refreshData()
+  const handleSessionSave = async (session: TrainingSession) => {
+    const normalizedDateISO = toISODateString(fromISODateString(session.date))
+    await saveSession({ ...session, date: normalizedDateISO })
+
+    if (normalizedDateISO === selectedDateISO) {
+      await refreshSessions(normalizedDateISO)
+    } else {
+      setSelectedDateISO(normalizedDateISO)
+    }
+
+    setEditingSession(null)
   }
 
-  async function handleDeleteSpesa(id: number) {
-    await deleteSpesa(id)
-    refreshData()
+  const handleEditSession = (session: TrainingSession) => {
+    setEditingSession(session)
   }
 
-  async function handleAddCategoria(nome: string) {
-    await addCategoria({ nome })
-    refreshData()
+  const handleCancelEdit = () => {
+    setEditingSession(null)
   }
 
-  async function handleDeleteCategoria(id: number) {
-    await deleteCategoria(id)
-    refreshData()
+  const handleDeleteSession = async (session: TrainingSession) => {
+    if (!session.id) {
+      return
+    }
+
+    const confirmDeletion =
+      typeof window === 'undefined'
+        ? true
+        : window.confirm(
+            `Remove "${session.title}" from ${session.date}? This action cannot be undone.`,
+          )
+
+    if (!confirmDeletion) {
+      return
+    }
+
+    await deleteSession(session.id)
+    await refreshSessions(selectedDateISO)
+
+    if (editingSession && editingSession.id === session.id) {
+      setEditingSession(null)
+    }
   }
-
-  async function handleAddMetodo(nome: string) {
-    await addMetodoPagamento({ nome })
-    refreshData()
-  }
-
-  async function handleDeleteMetodo(id: number) {
-    await deleteMetodoPagamento(id)
-    refreshData()
-  }
-
-  const pageCopy = useMemo<Record<View, { title: string; subtitle: string }>>(
-    () => ({
-      dashboard: {
-        title: 'Expense app',
-        subtitle: '',
-      },
-      add: {
-        title: 'Registra una spesa',
-        subtitle: 'Inserisci una nuova voce e tieni aggiornata la tua lista.',
-      },
-      manage: {
-        title: 'Gestisci categorie e metodi',
-        subtitle: 'Personalizza le etichette per classificare le spese con precisione.',
-      },
-    }),
-    [],
-  )
-
-  const { title, subtitle } = pageCopy[activeView]
 
   return (
     <div className="app-shell">
       <div className="container page-container">
         <header className="app-header">
-          <h1>
-            💰 <span>{title}</span>
-          </h1>
-          <p>{subtitle}</p>
+          <h1>🏃‍♀️ Track &amp; Field Planner</h1>
+          <p>
+            Plan and log daily training for the track. Navigate by day, capture workout structure,
+            and surface key statistics instantly.
+          </p>
         </header>
 
         <main className="page-content">
-          {activeView === 'dashboard' && (
-            <DashboardPage spese={spese} onDelete={handleDeleteSpesa} />
-          )}
+          <DayNavigator
+            date={selectedDate}
+            onChange={handleDateChange}
+            sessions={sessions}
+            stats={stats}
+          />
 
-          {activeView === 'add' && (
-            <section className="page-section">
-              <ExpenseForm
-                onAdd={handleAddSpesa}
-                categorie={categorie}
-                metodiPagamento={metodiPagamento}
-              />
-              <div className="page-section">
-                <ExpenseList spese={spese} onDelete={handleDeleteSpesa} />
-              </div>
-            </section>
-          )}
+          <div className="responsive-grid">
+            <SessionForm
+              selectedDate={selectedDate}
+              initialSession={editingSession}
+              onSave={handleSessionSave}
+              onCancelEdit={handleCancelEdit}
+            />
+          </div>
 
-          {activeView === 'manage' && (
-            <div className="manage-grid">
-              <CategoryManager
-                categorie={categorie}
-                onAdd={handleAddCategoria}
-                onDelete={handleDeleteCategoria}
-              />
-              <PaymentMethodManager
-                metodi={metodiPagamento}
-                onAdd={handleAddMetodo}
-                onDelete={handleDeleteMetodo}
-              />
-            </div>
-          )}
+          <SessionList
+            sessions={sessions}
+            loading={loading}
+            onEdit={handleEditSession}
+            onDelete={handleDeleteSession}
+          />
         </main>
       </div>
-
-      <nav className="bottom-nav" aria-label="Navigazione principale">
-        <button
-          type="button"
-          className={`nav-item ${activeView === 'dashboard' ? 'active' : ''}`}
-          onClick={() => setActiveView('dashboard')}
-        >
-          <span className="nav-icon" aria-hidden="true">
-            📊
-          </span>
-        </button>
-        <button
-          type="button"
-          className={`nav-item nav-primary ${activeView === 'add' ? 'active' : ''}`}
-          onClick={() => setActiveView('add')}
-          aria-label="Aggiungi spesa"
-        >
-          <span className="nav-icon" aria-hidden="true">
-            +
-          </span>
-        </button>
-        <button
-          type="button"
-          className={`nav-item ${activeView === 'manage' ? 'active' : ''}`}
-          onClick={() => setActiveView('manage')}
-        >
-          <span className="nav-icon" aria-hidden="true">
-            🛠️
-          </span>
-        </button>
-      </nav>
     </div>
   )
 }

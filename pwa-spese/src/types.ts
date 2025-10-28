@@ -1,18 +1,37 @@
-export interface Spesa {
-  id?: number
-  descrizione: string
-  importo: number
-  categoria: string
-  metodoPagamento: string
-  data: string
+export type TrainingType = 'running' | 'gym'
+
+export type DistanceUnit = 'm' | 'km'
+export type WeightUnit = 'kg' | 'lb'
+
+export interface CustomMetric {
+  id: string
+  label: string
+  value: string
 }
 
-export interface Categoria {
+export interface TrainingSession {
   id?: number
-  nome: string
+  date: string
+  type: TrainingType
+  title: string
+  focusArea?: string
+  series?: number | null
+  repsPerSeries?: number | null
+  repTimes?: number[]
+  distanceSegments?: number[]
+  recoveryTime?: number | null
+  distancePerRep?: number | null
+  distanceUnit?: DistanceUnit
+  weightPerRep?: number | null
+  weightUnit?: WeightUnit
+  customMetrics?: CustomMetric[]
+  notes?: string
+  createdAt?: string
+  updatedAt?: string
 }
 
-export interface MetodoPagamento {
-  id?: number
-  nome: string
+export interface TrainingStats {
+  averageRepTimeSeconds: number | null
+  totalDistanceKm: number
+  totalWeightKg: number
 }

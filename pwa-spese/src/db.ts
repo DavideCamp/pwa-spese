@@ -1,66 +1,104 @@
 import { openDB } from 'idb'
-import type { Spesa, Categoria, MetodoPagamento } from './types'
+import type { TrainingSession } from './types'
+
+const DB_NAME = 'trainingSessionsDB'
+const DB_VERSION = 1
+const STORE_NAME = 'sessions'
+const DATE_INDEX = 'by-date'
 
 export async function getDB() {
-  return openDB('speseDB', 2, {
-    upgrade(db, oldVersion) {
-      if (!db.objectStoreNames.contains('spese')) {
-        db.createObjectStore('spese', { keyPath: 'id', autoIncrement: true })
+  return openDB(DB_NAME, DB_VERSION, {
+    upgrade(db, _oldVersion, _newVersion, transaction) {
+      let store
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        store = db.createObjectStore(STORE_NAME, {
+          keyPath: 'id',
+          autoIncrement: true,
+        })
+      } else if (transaction) {
+        store = transaction.objectStore(STORE_NAME)
       }
-      if (!db.objectStoreNames.contains('categorie')) {
-        db.createObjectStore('categorie', { keyPath: 'id', autoIncrement: true })
-      }
-      if (oldVersion < 2 && !db.objectStoreNames.contains('metodiPagamento')) {
-        db.createObjectStore('metodiPagamento', { keyPath: 'id', autoIncrement: true })
+
+      if (store && !store.indexNames.contains(DATE_INDEX)) {
+        store.createIndex(DATE_INDEX, 'date')
       }
     },
   })
 }
 
-// --- SPESE ---
-export async function getSpese(): Promise<Spesa[]> {
+export async function getAllSessions(): Promise<TrainingSession[]> {
   const db = await getDB()
-  return db.getAll('spese')
+  const sessions = await db.getAll(STORE_NAME)
+  return sessions.sort(sortByDateAndTime)
 }
 
-export async function addSpesa(spesa: Spesa) {
+export async function getSessionsByDate(date: string): Promise<TrainingSession[]> {
   const db = await getDB()
-  await db.add('spese', spesa)
+  const index = db.transaction(STORE_NAME).store.index(DATE_INDEX)
+  const sessions = await index.getAll(date)
+  return sessions.sort(sortByDateAndTime)
 }
 
-export async function deleteSpesa(id: number) {
+export async function saveSession(session: TrainingSession): Promise<TrainingSession> {
   const db = await getDB()
-  await db.delete('spese', id)
+  const now = new Date().toISOString()
+
+  const cleanRepTimes =
+    session.repTimes?.filter((value) => typeof value === 'number' && Number.isFinite(value)) ?? []
+
+  const { id: sessionId, ...sessionWithoutId } = session
+
+  const cleanDistanceSegments =
+    session.distanceSegments?.filter(
+      (value) => typeof value === 'number' && Number.isFinite(value) && value > 0,
+    ) ?? []
+
+  const record: TrainingSession = {
+    ...sessionWithoutId,
+    repTimes: cleanRepTimes,
+    distanceSegments: cleanDistanceSegments.length > 0 ? cleanDistanceSegments : undefined,
+    createdAt: session.createdAt ?? now,
+    updatedAt: now,
+  }
+
+  if (isValidStoreKey(sessionId)) {
+    record.id = sessionId
+  }
+
+  const key = await db.put(STORE_NAME, record)
+
+  const numericId =
+    typeof key === 'number' && Number.isFinite(key)
+      ? key
+      : typeof key === 'string'
+        ? Number.parseInt(key, 10)
+        : sessionId
+
+  const normalizedId =
+    typeof numericId === 'number' && Number.isFinite(numericId)
+      ? numericId
+      : isValidStoreKey(sessionId)
+        ? sessionId
+        : undefined
+
+  return {
+    ...record,
+    id: normalizedId,
+  }
 }
 
-// --- CATEGORIE ---
-export async function getCategorie(): Promise<Categoria[]> {
+export async function deleteSession(id: number) {
   const db = await getDB()
-  return db.getAll('categorie')
+  await db.delete(STORE_NAME, id)
 }
 
-export async function addCategoria(cat: Categoria) {
-  const db = await getDB()
-  await db.add('categorie', cat)
+function sortByDateAndTime(a: TrainingSession, b: TrainingSession) {
+  if (a.date !== b.date) {
+    return a.date.localeCompare(b.date)
+  }
+  return (a.createdAt ?? '').localeCompare(b.createdAt ?? '')
 }
 
-export async function deleteCategoria(id: number) {
-  const db = await getDB()
-  await db.delete('categorie', id)
-}
-
-// --- METODI PAGAMENTO ---
-export async function getMetodiPagamento(): Promise<MetodoPagamento[]> {
-  const db = await getDB()
-  return db.getAll('metodiPagamento')
-}
-
-export async function addMetodoPagamento(metodo: MetodoPagamento) {
-  const db = await getDB()
-  await db.add('metodiPagamento', metodo)
-}
-
-export async function deleteMetodoPagamento(id: number) {
-  const db = await getDB()
-  await db.delete('metodiPagamento', id)
+function isValidStoreKey(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value)
 }
